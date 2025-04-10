@@ -29,7 +29,8 @@ router.get('/:_id/logs', async (req, res) => {
         // Numeric limit
         const limitParam = parseLimit(limit);
 
-        const exercises = await Exercise.find(queryObj)
+       const exercises = await Exercise.find(queryObj)
+            .sort({ date: 1 })
             .limit(limitParam)
             .exec();
 

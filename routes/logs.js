@@ -21,20 +21,18 @@ router.get('/:_id/logs', async (req, res) => {
         let { from, to, limit } = req.query;
         let queryObj = { userId };
 
-        // Date range
         if (from || to) {
             queryObj.date = dateRange(from, to);
         }
 
-        // Numeric limit
         const limitParam = parseLimit(limit);
 
-       const exercises = await Exercise.find(queryObj)
-            .sort({ date: 1 })
-            .limit(limitParam)
-            .exec();
+        const allExercises = await Exercise.find(queryObj).sort({ date: 1 }).exec();
+        const count = allExercises.length;
 
-        const log = exercises.map(ex => ({
+        const limitedExercises = limitParam > 0 ? allExercises.slice(0, limitParam) : allExercises;
+
+        const log = limitedExercises.map(ex => ({
             description: ex.description,
             duration: ex.duration,
             date: new Date(ex.date).toDateString()
@@ -43,7 +41,7 @@ router.get('/:_id/logs', async (req, res) => {
         res.json({
             _id: userFound._id,
             username: userFound.username,
-            count: log.length,
+            count,
             log
         });
     } catch (error) {
@@ -51,5 +49,6 @@ router.get('/:_id/logs', async (req, res) => {
         res.status(500).json({ error: 'There was a problem retrieving the logs.' });
     }
 });
+
 
 module.exports = router;

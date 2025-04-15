@@ -30,9 +30,8 @@ router.get('/:_id/logs', async (req, res) => {
         const allExercises = await Exercise.find(queryObj).sort({ date: 1 }).exec();
         const count = allExercises.length;
 
-        const limitedExercises = limitParam > 0 ? allExercises.slice(0, limitParam) : allExercises;
 
-        const log = limitedExercises.map(ex => ({
+        const log = allExercises.map(ex => ({
             description: ex.description,
             duration: ex.duration,
             date: new Date(ex.date).toDateString()
@@ -52,3 +51,4 @@ router.get('/:_id/logs', async (req, res) => {
 
 
 module.exports = router;
+

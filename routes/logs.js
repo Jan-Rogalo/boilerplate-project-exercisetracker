@@ -24,14 +24,16 @@ router.get('/:_id/logs', async (req, res) => {
         if (from || to) {
             queryObj.date = dateRange(from, to);
         }
-
         const limitParam = parseLimit(limit);
+        
+        const count = await Exercise.countDocuments(queryObj);
 
-        const allExercises = await Exercise.find(queryObj).sort({ date: 1 }).exec();
-        const count = allExercises.length;
+        const exercises = await Exercise.find(queryObj)
+            .sort({ date: 1 })
+            .limit(limitParam)
+            .exec();
 
-
-        const log = allExercises.map(ex => ({
+        const log = exercises.map(ex => ({
             description: ex.description,
             duration: ex.duration,
             date: new Date(ex.date).toDateString()
@@ -49,6 +51,4 @@ router.get('/:_id/logs', async (req, res) => {
     }
 });
 
-
 module.exports = router;
-
